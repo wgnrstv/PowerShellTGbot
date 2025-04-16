@@ -1,50 +1,74 @@
-param(
-    [string]$Status = "Успешно",
-    [string]$Operation = "Калибровка",
-    [string]$Message = "Операция завершена успешно"
+﻿param (
+    [string]$Status = "Ок"
 )
-
-# Правильная кодировка UTF8
-#[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
-$OutputEncoding = [System.Text.Encoding]::UTF8
-
-$token = "7571011290:AAF0lrN90__wyghc4A16TCv19lz3v3fiEoI"
-$chat_id = "279037700"
-
-# Получаем время
-$time = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-
-# Сообщение с временем и операцией
-$logMessage = "[$time] [$Operation] → $Message`n"
-$logMessage | Out-File -FilePath ".\log.txt" -Append -Encoding utf8
-
-#Сохранить темновой кадр
-$darkFrame = "RAW DATA OF DARK FRAME" # Данные из камеры
-$darkFramePath = ".\dark_frame_$time.txt"
-$darkFrame | Out-File -FilePath $darkFramePath -Encoding utf8
-
-#Температура
-$temperature = "Текущая температура: "
-$temperature | Out-File -FilePath ".\temperature_log.txt" -Append -Encoding utf8
-
-#Параметры для отправки в TG
-$token = "7571011290:AAF0lrN90__wyghc4A16TCv19lz3v3fiEoI"
-$chat_id = "279037700"
-$logPath = ".\log.txt"
-
+# Параметры бота
+$token = "токен"
+$chat_id = "id"
 $url = "https://api.telegram.org/bot$token/sendMessage"
-$body = @{
+
+# Дата и сообщение
+$time = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$status = "Успех неизбежен!"
+$message = "[$time] ✅ Калибровка печки №1 завершена успешно. Статус: $Status"
+
+# Формирование строк для записи в лог:
+$logMessage1 = "[$time] ✅ Калибровка печки №1 завершена успешно."
+$logMessage2 = "Статус: $status"
+
+# Объект запроса
+$payload = @{
     chat_id = $chat_id
-    text   = $Message
+    text    = $message
 }
 
-try
-{
-    $response = Invoke-RestMethod -Uri $url -Method Post -Body $body
-    Add-Content -Path ".\log.txt" -Value $logMessage
-    Write-Host "Отчет отправлен и записан в log.txt"
+# Сформировать JSON
+$jsonPayload = @{ chat_id = $chatId; text = $message } | ConvertTo-Json -Compress
+
+# Преобразовать в UTF-8 без BOM
+$json = $payload | ConvertTo-Json -Compress
+
+# Преобразование в UTF-8 JSON
+$json = $payload | ConvertTo-Json -Compress
+$utf8 = [System.Text.Encoding]::UTF8.GetBytes($json)
+
+# Логирование
+$logFile = "log.txt" # путь к файлу для логирования
+$logMessage = "[$time]`n - JSON отправки: $json"
+#Add-Content -Path $logFile -Value $logMessage
+
+# Запись в файл в правильной кодировке
+[System.IO.File]::AppendAllText($logFile, "$logMessage1`r`n$logMessage2`r`n", [System.Text.Encoding]::UTF8)
+
+
+# Преобразование в JSON (формируем правильный JSON)
+$jsonPayload = $payload | ConvertTo-Json -Compress
+
+# Логирование JSON для проверки
+Write-Host "Сериализованный JSON: $jsonPayload"
+
+
+try {
+    # Отправка запроса
+    $response = Invoke-WebRequest -Uri $url `
+                              -Method POST `
+                              -Body ($payload | ConvertTo-Json -Compress) `
+                              -ContentType "application/json; charset=utf-8" `
+                              -UseBasicParsing `
+                              -Headers @{ "Accept-Charset" = "utf-8" } | Out-Null
+
+    Write-Host "✅ Отправлено. Ответ:"
+    Write-Host $response.Content
+
+     # Логирование успешной отправки
+#    $responseLog = "[$time] - Статус отправки: Успех неизбежен!"
+#    $responseLog | Out-File -Append -FilePath $logFile
+    [System.IO.File]::AppendAllText($logFile, "$responseLog`r`n", [System.Text.Encoding]::UTF8)
 }
 catch {
-    Write-Error "❌ ОШИБКА: $_"
-    Add-Content -Path ".\log.txt" -Value "[$time] ❌ Ошибка: $_"
+    Write-Error "❌ Ошибка отправки: $($_.Exception.Message)"
+
+    # Логирование ошибки
+#    $errorLog = "[$time] - Статус отправки: Ошибка - $($_.Exception.Message)"
+    $errorLog | Out-File -Append -FilePath $logFile
+    [System.IO.File]::AppendAllText($logFile, "$errorLog`r`n", [System.Text.Encoding]::UTF8)
 }
