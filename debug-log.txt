@@ -1,0 +1,4 @@
+-Value[] Detected Finish.txt. Attempting to launch main-script.ps1
+[2025-04-22 12:02:52] Обнаружен Finish.txt.
+[2025-04-22 12:09:52] Обнаружен Finish.txt.
+[2025-04-22 12:10:40] Обнаружен Finish.txt.

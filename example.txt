@@ -1,8 +1,0 @@
-#Сохранить темновой кадр
-$darkFrame = "RAW DATA OF DARK FRAME" # Данные из камеры
-$darkFramePath = ".\dark_frame_$time.txt"
-$darkFrame | Out-File -FilePath $darkFramePath -Encoding utf8
-
-#Температура
-$temperature = "Текущая температура: "
-$temperature | Out-File -FilePath ".\temperature_log.txt" -Append -Encoding utf8

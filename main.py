@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 # Загрузка переменных из .env
 load_dotenv()
 
-TOKEN: "7571011290:AAF0lrN90__wyghc4A16TCv19lz3v3fiEoI"
+TOKEN: "8035230462:AAGr0sT2Wl9ykQU0i7_mb5trOvl4b6ww-9Q"
 CHAT_ID: "279037700"
 
 # Отправка сообщения

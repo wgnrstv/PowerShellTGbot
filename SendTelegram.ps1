@@ -2,8 +2,8 @@
     [string]$Status = "Ок"
 )
 # Параметры бота
-$token = "токен"
-$chat_id = "id"
+$token = "8035230462:AAGr0sT2Wl9ykQU0i7_mb5trOvl4b6ww-9Q"
+$chat_id = "279037700"
 $url = "https://api.telegram.org/bot$token/sendMessage"
 
 # Дата и сообщение
@@ -34,7 +34,7 @@ $utf8 = [System.Text.Encoding]::UTF8.GetBytes($json)
 # Логирование
 $logFile = "log.txt" # путь к файлу для логирования
 $logMessage = "[$time]`n - JSON отправки: $json"
-#Add-Content -Path $logFile -Value $logMessage
+Add-Content -Path $logFile -Value $logMessage
 
 # Запись в файл в правильной кодировке
 [System.IO.File]::AppendAllText($logFile, "$logMessage1`r`n$logMessage2`r`n", [System.Text.Encoding]::UTF8)
@@ -60,15 +60,15 @@ try {
     Write-Host $response.Content
 
      # Логирование успешной отправки
-#    $responseLog = "[$time] - Статус отправки: Успех неизбежен!"
-#    $responseLog | Out-File -Append -FilePath $logFile
+    $responseLog = "[$time] - Статус отправки: Успех неизбежен!"
+    $responseLog | Out-File -Append -FilePath $logFile
     [System.IO.File]::AppendAllText($logFile, "$responseLog`r`n", [System.Text.Encoding]::UTF8)
 }
 catch {
     Write-Error "❌ Ошибка отправки: $($_.Exception.Message)"
 
     # Логирование ошибки
-#    $errorLog = "[$time] - Статус отправки: Ошибка - $($_.Exception.Message)"
+    $errorLog = "[$time] - Статус отправки: Ошибка - $($_.Exception.Message)"
     $errorLog | Out-File -Append -FilePath $logFile
     [System.IO.File]::AppendAllText($logFile, "$errorLog`r`n", [System.Text.Encoding]::UTF8)
 }
